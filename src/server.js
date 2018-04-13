@@ -67,4 +67,13 @@ server.get('/top-answer/:soID', async ({ params }, res) => {
   res.send(targetPost);
 });
 
+server.get('/popular-jquery-questions', async (req, res) => {
+  const result = await Post.find({ parentID: null })
+    .or([{ score: { $gt: 5000 } }, { 'user.reputation': { $gt: 200000 } }])
+    .where('tags')
+    .in(['jquery']);
+
+  res.send(result);
+});
+
 module.exports = { server };

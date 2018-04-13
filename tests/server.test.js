@@ -120,7 +120,7 @@ describe('Request', () => {
   });
 
   describe('GET /popular-jquery-questions', () => {
-    xit('returns popular jquery questions', () => {
+    it('returns popular jquery questions', () => {
       return get('/popular-jquery-questions', STATUS_OK).then(posts =>
         expectPosts([503093, 178325, 14994391], posts)
       );
