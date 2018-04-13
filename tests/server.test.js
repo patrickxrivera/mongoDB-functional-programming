@@ -128,7 +128,7 @@ describe('Request', () => {
   });
 
   describe('GET /npm-answers', () => {
-    xit('returns answers to npm questions', () => {
+    it('returns answers to npm questions', () => {
       const expectedPostIDs = [
         25861938,
         39607180,

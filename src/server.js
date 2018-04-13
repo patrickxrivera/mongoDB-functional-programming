@@ -76,4 +76,16 @@ server.get('/popular-jquery-questions', async (req, res) => {
   res.send(result);
 });
 
+const getNpmAnswers = ({ soID }) => Post.find({ parentID: soID });
+
+server.get('/npm-answers', async (req, res) => {
+  const npmQuestions = await Post.find({ parentID: null })
+    .where('tags')
+    .in(['npm']);
+
+  const npmAnswers = await Promise.all(R.map(getNpmAnswers, npmQuestions));
+
+  res.send(R.flatten(npmAnswers));
+});
+
 module.exports = { server };
