@@ -98,23 +98,23 @@ describe('Request', () => {
       return get('/accepted-answer/bad', STATUS_USER_ERROR);
     });
 
-    xit('reports a post with no accepted answer', () => {
+    it('reports a post with no accepted answer', () => {
       return get('/accepted-answer/21459196', STATUS_USER_ERROR);
     });
   });
 
   describe('GET /top-answer/:soID', () => {
-    xit('returns the top answer', () => {
+    it('returns the top answer', () => {
       return get('/top-answer/208105', STATUS_OK).then(post =>
         expectPost(21735614, post)
       );
     });
 
-    xit('reports a bad id', () => {
+    it('reports a bad id', () => {
       return get('/top-answer/bad', STATUS_USER_ERROR);
     });
 
-    xit('reports a post with no top answer', () => {
+    it('reports a post with no top answer', () => {
       return get('/top-answer/31392914', STATUS_USER_ERROR);
     });
   });

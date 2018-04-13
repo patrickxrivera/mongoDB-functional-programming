@@ -27,6 +27,16 @@ const handleNoPostError = handleUserError('Post unavailable');
 
 const handleIDError = handleUserError('Invalid ID');
 
+const getTargetPost = (results, acceptedAnswerID) => {
+  let currPost = results.shift();
+
+  while (currPost.soID === acceptedAnswerID) {
+    currPost = results.shift();
+  }
+
+  return currPost;
+};
+
 server.get('/accepted-answer/:soID', async ({ params }, res) => {
   const [idErr, originalPost] = await findSoID(params.soID);
 
@@ -36,9 +46,25 @@ server.get('/accepted-answer/:soID', async ({ params }, res) => {
 
   const [noPostErr, acceptedAnswerPost] = await findSoID(acceptedAnswerID);
 
-  if (noPostErr) return handleNoPostError(res);
+  if (noPostErr || R.isNil(acceptedAnswerPost)) return handleNoPostError(res);
 
   res.send(acceptedAnswerPost);
+});
+
+server.get('/top-answer/:soID', async ({ params }, res) => {
+  const [idErr, originalPost] = await findSoID(params.soID);
+
+  if (idErr) return handleIDError(res);
+
+  const { acceptedAnswerID } = originalPost;
+
+  if (R.isNil(acceptedAnswerID)) return handleNoPostError(res);
+
+  const results = await Post.find({ parentID: params.soID }).sort('-score');
+
+  const targetPost = getTargetPost(results, acceptedAnswerID);
+
+  res.send(targetPost);
 });
 
 module.exports = { server };
