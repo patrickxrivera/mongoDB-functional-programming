@@ -76,16 +76,26 @@ server.get('/popular-jquery-questions', async (req, res) => {
   res.send(result);
 });
 
-const getNpmAnswers = ({ soID }) => Post.find({ parentID: soID });
+const sendAnswers = R.curry((res, answers) => {
+  res.send(answers);
+});
 
-server.get('/npm-answers', async (req, res) => {
-  const npmQuestions = await Post.find({ parentID: null })
+const flattenAnswers = answers => R.flatten(answers);
+
+const getAnswers = ({ soID }) => Post.find({ parentID: soID });
+
+const findAnswers = questions => Promise.all(R.map(getAnswers, questions));
+
+const findQuestions = req =>
+  Post.find({ parentID: null })
     .where('tags')
     .in(['npm']);
 
-  const npmAnswers = await Promise.all(R.map(getNpmAnswers, npmQuestions));
+const handleNpmAnswersQuery = (req, res) =>
+  R.pipeP(findQuestions, findAnswers, flattenAnswers, sendAnswers(res))(req);
 
-  res.send(R.flatten(npmAnswers));
+server.get('/npm-answers', async (req, res) => {
+  await handleNpmAnswersQuery(req, res);
 });
 
 module.exports = { server };
